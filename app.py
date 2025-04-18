@@ -4,6 +4,7 @@ import requests
 
 # Set your OpenRouter API Key here
 openai.api_key = "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"
+openai.api_base = "https://openrouter.ai/api/v1"
 
 # Load the document (replace with your actual document)
 # For example, loading a simple text file for now:
