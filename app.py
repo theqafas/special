@@ -1,16 +1,18 @@
 import streamlit as st
-import openai
+import google.generativeai as genai
 
-# Set OpenRouter API key and base
-openai.api_key = "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"  # Replace with your OpenRouter API key
-openai.api_base = "https://openrouter.ai/api/v1"
+# Set your Gemini API key here
+genai.configure(api_key="AIzaSyCoHxGk58O0xDAPDhSCckYpNyYAiKquz5o")  # 🔑 Replace this with your key
 
 # Load the document
 with open("your_document.txt", "r", encoding="utf-8") as file:
     document_text = file.read()
 
-st.title("📄 Document QA Bot")
-st.write("Ask questions based on the uploaded document.")
+# Initialize the Gemini model (1.5 Flash)
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+st.title("📄 Gemini 1.5 Flash - Document QA Bot")
+st.write("Ask any question based on your uploaded document.")
 
 # User input
 user_question = st.text_input("Ask a question:")
@@ -18,14 +20,16 @@ user_question = st.text_input("Ask a question:")
 if user_question:
     with st.spinner("Thinking..."):
         try:
-            # Use the new chat API format
-            response = openai.ChatCompletion.create(
-                model="openai/gpt-3.5-turbo",  # Use the OpenRouter supported model
-                messages=[
-                    {"role": "system", "content": f"You are an assistant who answers questions based on the following document:\n\n{document_text}"},
-                    {"role": "user", "content": user_question},
-                ]
-            )
-            st.success(response['choices'][0]['message']['content'])  # Updated response handling
+            # Generate content using Gemini
+            response = model.generate_content(f"""
+You are an intelligent assistant. Use the following document to answer the question:
+
+Document:
+{document_text}
+
+Question:
+{user_question}
+""")
+            st.success(response.text)
         except Exception as e:
-            st.error(f"Error: {str(e)}")
+            st.error(f"❌ Error: {str(e)}")
